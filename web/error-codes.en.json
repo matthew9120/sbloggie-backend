@@ -1,0 +1,5 @@
+{
+    "OK",//0
+    "Authentication is needed"//1
+    "Authentication failure"//2
+}
