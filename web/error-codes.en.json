@@ -2,5 +2,6 @@
     "0": "OK",
     "1": "Authentication is needed",
     "2": "Authentication failure",
-    "3": "You must confirm your humanity"
+    "3": "You must confirm your humanity",
+    "4": "You cannot be signed in when you want to register a new user"
 }

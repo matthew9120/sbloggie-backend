@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class BasicAuth extends Controller
 {
+    const recaptchaSecretKey = "6LchJTAUAAAAABJ-Aq2OY4wugr8cktywk4eRhtYr";
+    
     /**
      * @Route("/basic-auth/get-token", name="basic_logging")
      */
@@ -24,14 +26,29 @@ class BasicAuth extends Controller
     public function register(Request $request)
     {
         if ($this->get("security.authorization_checker")->isGranted("ROLE_USER")) {
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException(\json_encode([ "errorCode" => 4 ]));
         }
         
         $recaptchaKey = $request->request->get("g-recaptcha-key");
         
         if (empty($recaptchaKey)) {
-            return JsonResponse(["errorCode" => 3 ], JsonResponse::HTTP_BAD_REQUEST);
+            throw $this->createAccessDeniedException(\json_encode([ "errorCode" => 3 ]));
         }
+        
+        $recaptchaParams = [ "response" => $recaptchaKey, "secret" => self::recaptchaSecretKey ];
+        
+        $recaptchaJson = $this->get("http")->makeRequestUsingPost("https://www.google.com/recaptcha/api/siteverify", $recaptchaParams);
+        //something doesn't work
+        
+//        if (!empty($recaptchaJson)) {
+//            $recaptchaResponse = json_decode($recaptchaJson);
+//            
+//            if (!$recaptchaResponse["success"]) {
+//                throw $this->createAccessDeniedException(\json_encode([ "errorCode" => 3 ]));
+//            }
+//        } else {
+//            throw new \Exception(\json_encode([ "errorCode" => "Google's reCAPTCHA site is not responding" ]));
+//        }
         
         
         
