@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ApiKeyAuthenticator extends AbstractGuardAuthenticator implements GuardAuthenticatorInterface
 {
+    const API_KEY_HEADER = "X-AUTH-TOKEN";
+    
     public function start(Request $request, AuthenticationException $authException = null)
     {
         return new JsonResponse([ "errorCode" => 1 ], JsonResponse::HTTP_UNAUTHORIZED);
@@ -21,7 +23,7 @@ class ApiKeyAuthenticator extends AbstractGuardAuthenticator implements GuardAut
     
     public function getCredentials(Request $request)
     {
-        return $request->headers->get("X-AUTH-TOKEN");
+        return $request->headers->get(self::API_KEY_HEADER);
     }
     
     public function getUser($credentials, UserProviderInterface $userProvider)
@@ -35,7 +37,7 @@ class ApiKeyAuthenticator extends AbstractGuardAuthenticator implements GuardAut
     
     public function checkCredentials($credentials, UserInterface $user)
     {
-        return $user->getLoginToken() == $credentials;
+        return $user->getApiKey() === $credentials;
     }
     
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)

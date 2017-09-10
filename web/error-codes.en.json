@@ -1,5 +1,6 @@
 {
-    "OK",//0
-    "Authentication is needed"//1
-    "Authentication failure"//2
+    "0": "OK",
+    "1": "Authentication is needed",
+    "2": "Authentication failure",
+    "3": "You must confirm your humanity"
 }

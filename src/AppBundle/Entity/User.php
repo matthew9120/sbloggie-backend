@@ -36,23 +36,26 @@ class User implements AdvancedUserInterface
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    private $registerToken;
+    private $registerToken; 
     /**
      * @ORM\Column(type="string", unique=true)
      */
     private $apiKey;
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $passwordResetExpirationDate;
     
-    public function __construct($username, $password, $email, array $roles)
+    const PASSWORD_RESET_DATE_INTERVAL = "P1D";
+    
+    public function __construct($username, $encodedPassword, $email, array $roles = array())
     {
         $this->username = $username;
-        //hash password
-        $this->password = $password;
+        $this->password = $encodedPassword;
         $this->email = $email;
         $this->roles = $roles;
         
-        //to do
         $this->registerToken = $this->randomizeToken();
-        $this->loginToken = $this->randomizeToken();
     }
     
     public function getRoles()
@@ -113,6 +116,24 @@ class User implements AdvancedUserInterface
         return $this->apiKey;
     }
     
+    public function randomizeApiKey()
+    {
+        $this->apiKey = $this->randomizeToken();
+    }
+    
+    public function getPasswordResetExpirationDate()
+    {
+        return $this->passwordResetExpirationDate;
+    }
+    
+    public function setPasswordResetting()
+    {
+        $date = new \DateTime();
+        $date->add(new \DateInterval(self::PASSWORD_RESET_DATE_INTERVAL));
+        
+        $this->passwordResetExpirationDate = $date;
+    }
+    
     public function eraseCredentials() { }
     
     public function isAccountNonExpired()
@@ -122,7 +143,7 @@ class User implements AdvancedUserInterface
     
     public function isAccountNonLocked()
     {
-        return true;
+        return empty($this->passwordResetExpirationDate);
     }
     
     public function isCredentialsNonExpired()
@@ -137,7 +158,6 @@ class User implements AdvancedUserInterface
     
     private function randomizeToken()
     {
-        //check unique
-        return null;
+        return \md5(\random_int(\PHP_INT_MIN, \PHP_INT_MAX));
     }
 }

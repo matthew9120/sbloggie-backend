@@ -42,6 +42,6 @@ security:
             
             
     access_control:
-        #- { path: registering, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/basic-auth/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: ROLE_USER }
             
